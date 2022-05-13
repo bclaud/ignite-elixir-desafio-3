@@ -16,6 +16,12 @@ defmodule GenReport do
     }
   end
 
+  def build_from_many(filenames) do
+    filenames
+    |> Task.async_stream(&build/1)
+    |> merge_reports()
+  end
+
   defp to_map(parsed_report) do
     to_map = fn [name, hours, day, month, year] ->
       %{
@@ -50,5 +56,48 @@ defmodule GenReport do
         Map.update(existing_map, year, hours, &(&1 + hours))
       end)
     end)
+  end
+
+  defp merge_reports(reports) do
+    merge_value = fn report1, report2 ->
+      Map.merge(report1, report2, fn _k, v1, v2 -> v1 + v2 end)
+    end
+
+    merge_nested = fn report1, report2 ->
+      Map.merge(report1, report2, fn _k, v1, v2 -> merge_value.(v1, v2) end)
+    end
+
+    merged_all_hours =
+      Enum.reduce(reports, %{}, fn {:ok,
+                                    %{
+                                      "all_hours" => all_hours
+                                    }},
+                                   acc ->
+        merge_value.(acc, all_hours)
+      end)
+
+    merged_hours_month =
+      Enum.reduce(reports, %{}, fn {:ok,
+                                    %{
+                                      "hours_per_month" => hours_per_month
+                                    }},
+                                   acc ->
+        merge_nested.(acc, hours_per_month)
+      end)
+
+    merged_hours_year =
+      Enum.reduce(reports, %{}, fn {:ok,
+                                    %{
+                                      "hours_per_year" => hours_per_year
+                                    }},
+                                   acc ->
+        merge_nested.(acc, hours_per_year)
+      end)
+
+    %{
+      "all_hours" => merged_all_hours,
+      "hours_per_month" => merged_hours_month,
+      "hours_per_year" => merged_hours_year
+    }
   end
 end
