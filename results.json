@@ -1,14 +1,6 @@
 {
   "excluded": [],
-  "failed": [
-    {
-      "describe": "build/1",
-      "file": "/Users/mclaud/Courses/ignite-elixir-desafio-3/test/gen_report_test.exs",
-      "line": 10,
-      "module": "Elixir.GenReportTest",
-      "test": "test build/1 When passing file name return a report"
-    }
-  ],
+  "failed": [],
   "invalid": [],
   "passed": [
     {
@@ -17,6 +9,13 @@
       "line": 7,
       "module": "Elixir.GenReport.ParserTest",
       "test": "test parse_file/1 parses the file"
+    },
+    {
+      "describe": "build/1",
+      "file": "/Users/mclaud/Courses/ignite-elixir-desafio-3/test/gen_report_test.exs",
+      "line": 10,
+      "module": "Elixir.GenReportTest",
+      "test": "test build/1 When passing file name return a report"
     },
     {
       "describe": "build/1",

@@ -10,9 +10,9 @@ defmodule GenReport do
       |> to_map()
 
     %{
-      all_hours: all_hours(report_map),
-      hours_per_month: hours_per_month(report_map),
-      hours_per_year: hours_per_year(report_map)
+      "all_hours" => all_hours(report_map),
+      "hours_per_month" => hours_per_month(report_map),
+      "hours_per_year" => hours_per_year(report_map)
     }
   end
 
@@ -38,7 +38,7 @@ defmodule GenReport do
 
   defp hours_per_month(map) do
     Enum.reduce(map, %{}, fn %{name: name, hours: hours, month: month}, acc ->
-      Map.update(acc, name, %{}, fn existing_map ->
+      Map.update(acc, name, %{month => hours}, fn existing_map ->
         Map.update(existing_map, month, hours, &(&1 + hours))
       end)
     end)
@@ -46,7 +46,7 @@ defmodule GenReport do
 
   defp hours_per_year(map) do
     Enum.reduce(map, %{}, fn %{name: name, hours: hours, year: year}, acc ->
-      Map.update(acc, name, %{}, fn existing_map ->
+      Map.update(acc, name, %{year => hours}, fn existing_map ->
         Map.update(existing_map, year, hours, &(&1 + hours))
       end)
     end)
